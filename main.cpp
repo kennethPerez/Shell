@@ -6,8 +6,6 @@
  * Semestre II - 2015
  */
 
-
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>
