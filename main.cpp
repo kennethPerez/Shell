@@ -598,20 +598,4 @@ main()
         p = NULL;
 
     }while(true);
-
-   /*
-
-    grepArchivo("a", "/home/kenneth/Descargas/h.txt");
-    
-    cd("/home/kenneth/clusterdir");
-    ls(directorioActual);
-
-    ls_InfoArchivo("/home/kenneth/clusterdir","primos.c++");
-    grepDirectorio("p", "/home/kenneth/");
-    
-    catMostrar("cat datos.txt");
-
-    getEntorno();
-
-    */
 }
