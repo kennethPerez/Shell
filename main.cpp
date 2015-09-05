@@ -1,3 +1,12 @@
+/*
+ * Proyecto Sistemas Operativos
+ * Shell para Linux
+ * Kenneth Perez Alfaro
+ * Fauricio Rojas Hernandez
+ */
+
+
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>
