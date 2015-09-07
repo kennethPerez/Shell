@@ -597,5 +597,3 @@ main()
 
     }while(true);
 }
-
-/** FIN **/
