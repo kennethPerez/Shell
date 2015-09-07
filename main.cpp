@@ -581,6 +581,13 @@ void processCommand(char* cadena)
     return;
 }
 
+void guardarComando(char* comando)
+{
+    ofstream archivo();
+}
+
+
+
 main()
 { 
     char comando[256];
