@@ -583,7 +583,9 @@ void processCommand(char* cadena)
 
 void guardarComando(char* comando)
 {
-    ofstream archivo();
+    ofstream archivo("Comandos.txt",ios::out);
+    
+    archivo << comando;
 }
 
 
@@ -598,7 +600,8 @@ main()
         getEntorno();
         fflush(stdin); 
         p = gets(comando);
-
+        
+        guardarComando(p);
         processCommand(p);
         p = NULL;
 
