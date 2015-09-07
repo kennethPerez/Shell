@@ -19,6 +19,9 @@
 #include <sstream>
 #include <list>
 
+#include <termios.h>  
+#include <iomanip>
+
 #define length(x) (sizeof(x)/sizeof(x[0]))
 #define HOME getenv("HOME")
 
@@ -419,6 +422,9 @@ void catCopiar(char* cadena)
     }
 }
 
+
+
+
 /*****************************************************************************************************/
 /**
 * Procesa un comando obtenido de consola.
@@ -581,6 +587,12 @@ void processCommand(char* cadena)
     return;
 }
 
+
+/**
+ * Guarda en un archivo los comandos que se van ejecutando,
+ * Parámetros:
+ *    comando: Comando a guardar
+ */
 void guardarComando(char* comando)
 {
     ofstream archivo("Comandos.txt",ios::app);
@@ -591,7 +603,7 @@ void guardarComando(char* comando)
 
 
 main()
-{ 
+{
     char comando[256];
     char* p;
 
