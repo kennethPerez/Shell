@@ -427,36 +427,16 @@ void catCopiar(char* cadena)
 */
 void processCommand(char* cadena)
 {
-    stringstream ss(cadena);
-    stringstream tt(cadena);
-    string s, t;
-    int cantidadPalabras = 0;
+    list<string> arreglo = split(cadena);
 
-    while(getline(ss, s, ' '))
-    {
-        cantidadPalabras++;
-    }
-
-    string arreglo[cantidadPalabras];
-
-    int i=0;
-    while(getline(tt, t, ' '))
-    {
-        if(i < cantidadPalabras)
-        {
-            arreglo[i] = t;
-            i++;
-        }
-    }
-
-    if(length(arreglo) > 0)
+    if(arreglo.size() > 0)
     {
         ///-----------------------------------------------
-        if(arreglo[0] == "ls")
+        if(getValueAtPosition(arreglo, 0) == "ls")
         {
-            if(length(arreglo) == 2)
+            if(arreglo.size() == 2)
             {
-                if(arreglo[1] == "-1")
+                if(getValueAtPosition(arreglo, 1) == "-1")
                     ls(cadena);
                 else
                     ls(cadena);
