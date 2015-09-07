@@ -583,9 +583,9 @@ void processCommand(char* cadena)
 
 void guardarComando(char* comando)
 {
-    ofstream archivo("Comandos.txt",ios::out);
-    
+    ofstream archivo("Comandos.txt",ios::app);
     archivo << comando;
+    archivo << '\n';
 }
 
 
