@@ -19,7 +19,6 @@
 #include <sstream>
 #include <list>
 
-
 #define length(x) (sizeof(x)/sizeof(x[0]))
 #define HOME getenv("HOME")
 
@@ -29,6 +28,8 @@ extern "C" int gethostname (char*, int);
 
 /** Mantiene la ruta actual de trabajo */
 char* directorioActual = HOME;
+
+void principalProcess(char* cadena);
 
 /**
  * Corta un string, elimina la ultima palabra.
@@ -287,6 +288,76 @@ void ls_InfoArchivo(char* comando)
 
 }
 
+void lsEspecial(char* comando)
+{
+    list<string> arreglo = splitByOr(comando);    
+    
+    list<string> letras;
+    
+    if(arreglo.size() >= 2)
+    {
+        for(int i = 0; i < arreglo.size(); i++)
+        {
+            char* comando = new char[length(getValueAtPosition(arreglo,i)) + 1];;
+            strcpy(comando,getValueAtPosition(arreglo,i).c_str());
+            list<string> elementos = split(comando);
+            
+            if(elementos.size() == 2)
+            {
+                if(i == 0)
+                {
+                    if(getValueAtPosition(elementos,0) != "ls" && getValueAtPosition(elementos,1) != "-1")
+                    {
+                        cout << "Orden no valido para <ls-Especial>." << endl;
+                        break;
+                    }
+                }
+                else
+                {
+                    if(getValueAtPosition(elementos,0) == "grep")
+                        letras.push_back(getValueAtPosition(elementos,1));
+                    else
+                    {
+                        cout << "Elemento no valido cerca de "<<getValueAtPosition(elementos,0)<<" para <ls-Especial>." << endl;
+                        letras.clear();
+                        break;
+                    }
+                }                
+            }
+            else
+                if(elementos.size() > 2)
+                    cout << "Sobran argumentos para <ls-Especial>." << endl;
+                else
+                    cout << "Faltan argumentos para <ls-Especial>." << endl;            
+        }
+        
+        struct dirent *datosDirectorio;
+
+        DIR* directorio = opendir(directorioActual);
+        if(directorio != NULL)
+        {
+            list<string> elementosBuscados;
+            while((datosDirectorio = readdir(directorio)))
+            {
+                for(int i = 0; i < letras.size();i++)
+                {
+                    if(strstr(datosDirectorio->d_name, getValueAtPosition(letras,i).c_str()) != NULL)
+                        elementosBuscados.push_back(datosDirectorio->d_name);
+                }                
+            }
+            elementosBuscados.unique();
+            
+            for(int i=0; i < elementosBuscados.size(); i++)
+                cout << getValueAtPosition(elementosBuscados, i) << endl;
+        }
+    }
+    else
+    {
+        if(arreglo.size() < 2)
+            cout << "Faltan argumentos para la orden <ls-Especial>." << endl;
+    }    
+}
+
 /**
  * Cambia la variable de directorio acutual segun, desee el usuario.
  * ~ : LLeva home
@@ -376,7 +447,7 @@ void grepArchivo(char* comando)
         {
             if (linea.find(getValueAtPosition(arreglo,1), 0) != string::npos)
             {
-                cout << " - Line: "<<numero<<" "<<linea<<endl;
+                cout << " - Linea: "<<numero<<" "<<linea<<endl;
             }
             numero++;
         }
@@ -479,7 +550,6 @@ void guardarComando(char* comando)
  */
 void processCommand(char* cadena)
 {
-    
     stringstream ss(cadena);
     stringstream tt(cadena);
     string s, t;
@@ -504,7 +574,6 @@ void processCommand(char* cadena)
 
     if(length(arreglo) > 0)
     {
-        guardarComando(cadena);
         ///-----------------------------------------------
         if(arreglo[0] == "ls")
         {
@@ -629,16 +698,22 @@ void processCommand(char* cadena)
         }
         
         ///-----------------------------------------------
+        else if(arreglo[0] == "exit")
+        {
+            exit(1);
+        }
+        
+        ///-----------------------------------------------
         else if(arreglo[0] == "cmds")
         {
             if(length(arreglo) == 2)
             {
                 if(arreglo[1] == "del")
                 {
-                    remove( "Comandos.txt"); 
+                    remove("Comandos.txt"); 
                 }
                 else
-                    cout << "Argumento invalido para la orden <cd>." << endl;
+                    cout << "Argumento invalido para la orden <cmds>." << endl;
             }
             else if(length(arreglo) == 1)
             {
@@ -653,37 +728,41 @@ void processCommand(char* cadena)
                 }
 
                 archivo.close();
-
-                char comando[256];
-                char* p;            
-                cout << "Digite el numero de comando o '0' para salir: ";   
-               p = gets(comando);
-
-                int num = int(*p)-48;
-
-                if(num > 0)
+                
+                if(i > 1)
                 {
-                    ifstream archivo("Comandos.txt",ios::in);
+                    cout << "0. Salir" << endl;
+                    char comando[256];
+                    char* p;            
+                    cout << "Digite el numero de comando: ";   
+                    p = gets(comando);
 
-                    i = 1;
-                    while(getline(archivo, linea))
+                    int num = atoi(p);
+                    if(num > 0)
                     {
-                        if(i == num)
+                        ifstream archivo("Comandos.txt",ios::in);
+
+                        i = 1;
+                        while(getline(archivo, linea))
                         {
-                            char* p = new char[length(linea) + 1];
-                            strcpy(p,linea.c_str());
-                            processCommand(p);
+                            if(i == num)
+                            {
+                                char* p = new char[length(linea) + 1];
+                                strcpy(p,linea.c_str());
+                                principalProcess(p);
+                            }
+                            i++;
                         }
-                        i++;
-                    }
-                }      
+                    }      
+                }
+                else
+                    cout << "No hay comandos almacenados." << endl;
             }
             else
             {
                 if(length(arreglo) > 2)
                     cout << "Sobran argumentos para la orden <cmds>." << endl;
-            }
-              
+            }   
         }
 
         else
@@ -698,67 +777,54 @@ void processCommand(char* cadena)
  */
 void principalProcess(char* cadena)
 {
-    string findAmpersand, comando_string;
+    string sfind, comando_string;
     char * comando;
-    list<string> listaComandos = splitByOr(cadena);
     
-    if(listaComandos.size() == 0)
+    sfind = string(cadena);
+    guardarComando(cadena);
+    if( (sfind.find("ls",0) != string::npos) && (sfind.find("-1",0) != string::npos) && (sfind.find("grep",0) != string::npos))
     {
-        listaComandos.push_back(cadena);
+        lsEspecial(cadena);
     }
-    
-    list<string>::iterator iterador = listaComandos.begin();
-    while(iterador != listaComandos.end())
+    else
     {
-        findAmpersand = string(*iterador);
+        list<string> listaComandos = splitByOr(cadena);
     
-        if(findAmpersand.find("&", 0) != string::npos)
+        if(listaComandos.size() == 0)
         {
-            cout << "*********** Proceso ejecutandose en segundo plano ***********" << endl;
-            
+            listaComandos.push_back(cadena);
         }
-        else
-        {
-            comando_string = *iterador;
-            comando = new char[length(comando_string) + 1];
-            strcpy(comando,comando_string.c_str());
-            
-            
-            processCommand(comando);
-        }
-        
-        *iterador++;
-        
-        if(iterador != listaComandos.end())
-        {
-            cout << "*************************************************************" << endl;
-        }    
-    }
-}
 
-
-bool lsEspecial(char* comando)
-{
-    list<string> arreglo = splitByOr(comando);
-    list<string>::iterator iterador = arreglo.begin();
-    
-    bool hecho = false;
-    
-    if(arreglo.size() >= 2){
-        list<string> lista = split(arreglo.pop_front());
-        
-        while(iterador != arreglo.end())
+        list<string>::iterator iterador = listaComandos.begin();
+        while(iterador != listaComandos.end())
         {
+            sfind = string(*iterador);
+
+            if(sfind.find("&", 0) != string::npos)
+            {
+                cout << "*********** Proceso ejecutandose en segundo plano ***********" << endl;
+            }
+            else
+            {
+                comando_string = *iterador;
+                comando = new char[length(comando_string) + 1];
+                strcpy(comando,comando_string.c_str());
+
+                processCommand(comando);
+            }
+
             *iterador++;
+
+            if(iterador != listaComandos.end())
+            {
+                cout << "*************************************************************" << endl;
+            }    
         }
     }
-    
-    return hecho;
 }
 
 main()
 {
-    
     char comando[256];
     char* p;
 
