@@ -580,6 +580,20 @@ void processCommand(char* cadena)
         {
             system("clear");
         }
+        
+        ///-----------------------------------------------
+        else if(arreglo[0] == "cmds")
+        {
+            int i = 1;
+            string linea;
+            ifstream archivo("Comandos.txt",ios::in);
+            
+            while(getline(archivo, linea))
+            {
+                cout << i<<". "<<linea<<endl;
+                i++;
+            }
+        }
 
         else
             cout << "No se ha encontrado la orden <" + arreglo[0] + ">." << endl;
