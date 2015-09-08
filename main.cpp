@@ -89,8 +89,48 @@ list<string> split(char* cadena)
     {
         arreglo.push_back(s);
     }
-
+    
     return arreglo;
+}
+
+list<string> splitByOr(char* cadena)
+{
+    list<string> lista;
+    string find = string(cadena);
+    
+    if(find.find("|", 0) != string::npos)
+    {
+        stringstream ss(cadena);
+        string s, comando = "";
+        list<string> arreglo;
+        
+        while(getline(ss, s, ' '))
+        {
+            arreglo.push_back(s);
+        }
+
+        list<string>::iterator it = arreglo.begin();
+        while(it != arreglo.end())
+        {
+            if(*it == "|")
+            {
+                lista.push_back(comando);
+                comando = "";
+                *it++;
+            }
+            else
+            {
+                comando += *it;
+                *it++;
+
+                if(*it != "|" && it != arreglo.end())
+                    comando += " ";
+            }
+        }
+        lista.push_back(comando);
+    }
+    
+    return lista;
 }
 
 /**
@@ -451,6 +491,7 @@ void guardarComando(char* comando)
 */
 void processCommand(char* cadena)
 {
+    
     stringstream ss(cadena);
     stringstream tt(cadena);
     string s, t;
@@ -645,6 +686,45 @@ void processCommand(char* cadena)
     return;
 }
 
+void principalProcess(char* cadena)
+{
+    string findAmpersand, comando_string;
+    char * comando;
+    list<string> listaComandos = splitByOr(cadena);
+    
+    if(listaComandos.size() == 0)
+    {
+        listaComandos.push_back(cadena);
+    }
+    
+    list<string>::iterator iterador = listaComandos.begin();
+    while(iterador != listaComandos.end())
+    {
+        findAmpersand = string(*iterador);
+    
+        if(findAmpersand.find("&", 0) != string::npos)
+        {
+            cout << "*********** Proceso ejecutandose en segundo plano ***********" << endl;
+        }
+        else
+        {
+            comando_string = *iterador;
+            comando = new char[length(comando_string) + 1];
+            strcpy(comando,comando_string.c_str());
+            
+            
+            processCommand(comando);
+        }
+        
+        *iterador++;
+        
+        if(iterador != listaComandos.end())
+        {
+            cout << "*************************************************************" << endl;
+        }    
+    }
+}
+
 main()
 {
     char comando[256];
@@ -656,10 +736,8 @@ main()
         
         p = gets(comando);
         
-        processCommand(p);
+        principalProcess(p);
         p = NULL;
 
     }while(true);
 }
-
-/**FIN**/
