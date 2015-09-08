@@ -633,41 +633,60 @@ void processCommand(char* cadena)
         ///-----------------------------------------------
         else if(arreglo[0] == "cmds")
         {
-            int i = 1;
-            string linea;
-            ifstream archivo("Comandos.txt",ios::in);
-            
-            while(getline(archivo, linea))
+            if(length(arreglo) == 2)
             {
-                cout << i<<". "<<linea<<endl;
-                i++;
+                if(arreglo[1] == "del")
+                {
+                    remove( "Comandos.txt"); 
+                }
+                else
+                    cout << "Argumento invalido para la orden <cd>." << endl;
             }
-            
-            archivo.close();
-            
-            char comando[256];
-            char* p;            
-            cout << "Digite el numero de comando o '0' para salir: ";   
-            p = gets(comando);
-            
-            int num = int(*p)-48;
-            
-            if(num > 0)
+            else if(length(arreglo) == 1)
             {
+                int i = 1;
+                string linea;
                 ifstream archivo("Comandos.txt",ios::in);
-                
-                i = 1;
+
                 while(getline(archivo, linea))
                 {
-                    if(i == num)
-                    {
-                        char* p = new char[length(linea) + 1];
-                        strcpy(p,linea.c_str());
-                        processCommand(p);
-                    }
+                    cout << i<<". "<<linea<<endl;
                     i++;
                 }
-            }        }
+
+                archivo.close();
+
+                char comando[256];
+                char* p;            
+                cout << "Digite el numero de comando o '0' para salir: ";   
+                p = gets(comando);
+
+                int num = int(*p)-48;
+
+                if(num > 0)
+                {
+                    ifstream archivo("Comandos.txt",ios::in);
+
+                    i = 1;
+                    while(getline(archivo, linea))
+                    {
+                        if(i == num)
+                        {
+                            char* p = new char[length(linea) + 1];
+                            strcpy(p,linea.c_str());
+                            processCommand(p);
+                        }
+                        i++;
+                    }
+                }      
+            }
+            else
+            {
+                if(length(arreglo) > 2)
+                    cout << "Sobran argumentos para la orden <cmds>." << endl;
+            }
+              
+        }
 
         else
             cout << "No se ha encontrado la orden <" + arreglo[0] + ">." << endl;
