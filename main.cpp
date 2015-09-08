@@ -288,6 +288,10 @@ void ls_InfoArchivo(char* comando)
 
 }
 
+/**
+ * Filtra el directorio actual mediante uno o varios grep
+ * @param comando: Comando a ejecutar.
+ */
 void lsEspecial(char* comando)
 {
     list<string> arreglo = splitByOr(comando);    
@@ -766,7 +770,32 @@ void processCommand(char* cadena)
         }
 
         else
+        {
+            stringstream ss(getenv("PATH"));
+            string s;
+            list<string> arregloPath;
+
+            while(getline(ss, s, ':'))
+            {
+                arregloPath.push_back(s);
+            }
+
+            for(int i = 0;i<arregloPath.size();i++)
+            {
+                char* ruta = new char[length(getValueAtPosition(arregloPath,i)) + 1];
+                strcpy(ruta,getValueAtPosition(arregloPath,i).c_str());
+                strcat(ruta,"/");
+                strcat(ruta,arreglo[0].c_str());
+                               
+                if(system(ruta) == 0)
+                {
+                    system("clear");
+                    return;
+                }
+            }
+            system("clear");
             cout << "No se ha encontrado la orden <" + arreglo[0] + ">." << endl;
+        }  
     }
     return;
 }
@@ -823,6 +852,10 @@ void principalProcess(char* cadena)
     }
 }
 
+
+
+
+
 main()
 {
     char comando[256];
@@ -838,4 +871,5 @@ main()
         p = NULL;
 
     }while(true);
+    
 }

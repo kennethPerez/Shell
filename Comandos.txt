@@ -1,4 +1,0 @@
-clear
-1
-clear
-exit
