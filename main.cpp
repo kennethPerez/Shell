@@ -426,6 +426,24 @@ void catCopiar(char* cadena)
 
 
 /*****************************************************************************************************/
+
+/**
+ * Guarda en un archivo los comandos que se van ejecutando,
+ * Parámetros:
+ *    comando: Comando a guardar
+ */
+void guardarComando(char* comando)
+{
+    if(!strcmp(comando,"cmds") == 0)
+    {
+        ofstream archivo("Comandos.txt",ios::app);
+        archivo << comando;
+        archivo << '\n';
+    }
+}
+
+
+
 /**
 * Procesa un comando obtenido de consola.
 * Parámetros:
@@ -457,6 +475,7 @@ void processCommand(char* cadena)
 
     if(length(arreglo) > 0)
     {
+        guardarComando(cadena);
         ///-----------------------------------------------
         if(arreglo[0] == "ls")
         {
@@ -593,28 +612,38 @@ void processCommand(char* cadena)
                 cout << i<<". "<<linea<<endl;
                 i++;
             }
-        }
+            
+            archivo.close();
+            
+            char comando[256];
+            char* p;            
+            cout << "Digite el numero de comando o '0' para salir: ";   
+            p = gets(comando);
+            
+            int num = int(*p)-48;
+            
+            if(num > 0)
+            {
+                ifstream archivo("Comandos.txt",ios::in);
+                
+                i = 1;
+                while(getline(archivo, linea))
+                {
+                    if(i == num)
+                    {
+                        char* p = new char[length(linea) + 1];
+                        strcpy(p,linea.c_str());
+                        processCommand(p);
+                    }
+                    i++;
+                }
+            }        }
 
         else
             cout << "No se ha encontrado la orden <" + arreglo[0] + ">." << endl;
     }
     return;
 }
-
-
-/**
- * Guarda en un archivo los comandos que se van ejecutando,
- * Parámetros:
- *    comando: Comando a guardar
- */
-void guardarComando(char* comando)
-{
-    ofstream archivo("Comandos.txt",ios::app);
-    archivo << comando;
-    archivo << '\n';
-}
-
-
 
 main()
 {
@@ -624,10 +653,9 @@ main()
     do
     {
         getEntorno();
-        fflush(stdin); 
+        
         p = gets(comando);
         
-        guardarComando(p);
         processCommand(p);
         p = NULL;
 
