@@ -1,8 +1,8 @@
 /*
  * Proyecto Sistemas Operativos
  * Shell para Linux
- * Kenneth Perez Alfaro
- * Fauricio Rojas Hernandez
+ * Kenneth Perez Alfaro 2013096175
+ * Fauricio Rojas Hernandez 2013235611
  * Semestre II - 2015
  */
 
@@ -29,17 +29,14 @@ using namespace std;
 using std::string;
 extern "C" int gethostname (char*, int);
 
-/// Mantiene la ruta actual de trabajo
+/** Mantiene la ruta actual de trabajo */
 char* directorioActual = HOME;
 
 /**
-* Corta una cadena de chars, elimina el ultimo directorio.
-* Ej: ruta = /home/kenneth  retorna /home
-* Parámetros:
-*    ruta: Cadena a recortar.
-* Retorno:
-*    ruta: Cadena recortada.
-*/
+ * Corta un string, elimina la ultima palabra.
+ * @param ruta: String a cortar.
+ * @return String sin la ultima palabra.
+ */
 char* cortarCadena(char* ruta)
 {
     stringstream ss(ruta);
@@ -73,12 +70,10 @@ char* cortarCadena(char* ruta)
 }
 
 /**
-* Separa una cadena por espacios.
-* Parámetros:
-*    cadena: Cadena a separar.
-* Retorna:
-*    arreglo: Lista con las palabras de dicha cadena.
-*/
+ * Separa una cadena por espacios.
+ * @param cadena: Cadena a separar.
+ * @return Lista con las palabras de dicha cadena.
+ */
 list<string> split(char* cadena)
 {
     stringstream ss(cadena);
@@ -93,6 +88,11 @@ list<string> split(char* cadena)
     return arreglo;
 }
 
+/**
+ * Separa un string por operador or |.
+ * @param cadena: Cadena a separar.
+ * @return Lista con comandos en cada una de sus posiciones.
+ */
 list<string> splitByOr(char* cadena)
 {
     list<string> lista;
@@ -134,13 +134,11 @@ list<string> splitByOr(char* cadena)
 }
 
 /**
-* Obtiene el contenido de una posición de la lista.
-* Parámetros:
-*    arreglo: Lista en la que se busca.
-*    posicion: Posicion de la lista en la que se busca.
-* Retorno:
-*    Contenido de la posicion de parámetro.
-*/
+ * Obtiene el contenido de una posición de la lista.
+ * @param arreglo: Lista en la que se busca.
+ * @param posicion: Posicion de la lista en la que se busca.
+ * @return Contenido de la posicion de parámetro.
+ */
 string getValueAtPosition(list<string> arreglo, int posicion)
 {
     list<string>::iterator it = arreglo.begin();
@@ -160,9 +158,9 @@ string getValueAtPosition(list<string> arreglo, int posicion)
 }
 
 /**
-* Apartir del directorio actual, se obtine el entorno de trabajo.
-* Ej: kenneth@master:~$
-*/
+ * Apartir del directorio actual, se obtine el entorno de trabajo.
+ * Ej: kenneth@master:~$
+ */
 void getEntorno()
 {
     char* directorio = directorioActual;
@@ -178,8 +176,9 @@ void getEntorno()
 }
 
 /**
-* Apartir de una ruta, muestra la informacion del directorio
-*/
+ * Apartir de una ruta, muestra la informacion del directorio.
+ * @param comando: Comando a ejecutar.
+ */
 void ls(char* comando)
 {    
     list<string> arreglo = split(comando);
@@ -211,8 +210,9 @@ void ls(char* comando)
 }
 
 /**
-* Apartir del directorio actual y de un nombre de archivo, se la informacion del directorio en el archivo
-*/
+ * A partir del directorio actual y de un nombre de archivo, se la informacion del directorio en el archivo
+ * @param comando: Comando a ejecutar.
+ */
 void ls_GuardarArchivo(char* comando)
 {
     list<string> arreglo = split(comando);
@@ -244,8 +244,9 @@ void ls_GuardarArchivo(char* comando)
 }
 
 /**
-* Apartir de una ruta de un directorio, y un nombre de archivo, muestra la informacion del mismo
-*/
+ * A partir de una ruta de un directorio, y un nombre de archivo, muestra la informacion del mismo.
+ * @param comando: Comando a ejecutar.
+ */
 void ls_InfoArchivo(char* comando)
 {
     list<string> arreglo = split(comando);
@@ -289,12 +290,12 @@ void ls_InfoArchivo(char* comando)
 }
 
 /**
-* Cambia la variable de directorio acutual segun, desee el usuario.
-* ~ : LLeva home
-* . : Lleva a raiz
-* .. : lleva al directorio arriba
-* <ruta> : lleva al directorio indicado en ruta
-*/
+ * Cambia la variable de directorio acutual segun, desee el usuario.
+ * ~ : LLeva home
+ * . : Lleva a raiz
+ * .. : lleva al directorio arriba
+ * @param comando: Comando a ejecutar.
+ */
 void cd(char* comando)
 {
     list<string> arreglo = split(comando);
@@ -323,8 +324,9 @@ void cd(char* comando)
 }
 
 /**
-* Busca en el directorio indicado todos los archivos que en su nombre contengan la palabra indicada
-*/
+ * Busca en el directorio indicado todos los archivos que en su nombre contengan la palabra indicada.
+ * @param comando: Comando a ejecutar.
+ */
 void grepDirectorio(char* comando)
 {
     list<string> arreglo = split(comando);    
@@ -348,9 +350,10 @@ void grepDirectorio(char* comando)
 }
 
 /**
-* Busca la palabra en la ruta del archivo dada.
-* Si es del directorio actual nada mas se pone el nombre del archivo
-*/
+ * Busca la palabra en la ruta del archivo dada.
+ * Si es del directorio actual nada mas se pone el nombre del archivo.
+ * @param comando
+ */
 void grepArchivo(char* comando)
 {
     list<string> arreglo = split(comando);    
@@ -383,12 +386,10 @@ void grepArchivo(char* comando)
 }
 
 /**
-* Obtiene el contenido de un archivo.
-* Parámetros:
-*    cadena: Nombre del archivo.
-* Retorno:
-*    contenido: Contenido del archivo.
-*/
+ * Obtiene el contenido de un archivo.
+ * @param cadena: Nombre del archivo.
+ * @return Contenido del archivo.
+ */
 string obtenerContenidoArchivo(string cadena)
 {
     string linea, contenido = "", directorio;
@@ -411,10 +412,9 @@ string obtenerContenidoArchivo(string cadena)
 }
 
 /**
-* Muestra el contenido de uno o varios archivos.
-* Parámetros:
-*    cadena: Los archivos a mostrar contenido.
-*/
+ * Muestra el contenido de uno o varios archivos.
+ * @param cadena: Los archivos a mostrar su contenido.
+ */
 void catMostrar(char* cadena)
 {
     list<string> arreglo = split(cadena);
@@ -428,10 +428,9 @@ void catMostrar(char* cadena)
 }
 
 /**
-* Copia el contenido de uno o varios archivos en otro.
-* Parámetros:
-*    cadena: Los archivos a copiar y el archivo destino.
-*/
+ * Copia el contenido de uno o varios archivos en otro.
+ * @param cadena: Los archivos a copiar y el archivo destino.
+ */
 void catCopiar(char* cadena)
 {
     list<string> arreglo = split(cadena);
@@ -462,15 +461,9 @@ void catCopiar(char* cadena)
     }
 }
 
-
-
-
-/*****************************************************************************************************/
-
 /**
- * Guarda en un archivo los comandos que se van ejecutando,
- * Parámetros:
- *    comando: Comando a guardar
+ * Guarda en un archivo los comandos que se van ejecutando.
+ * @param comando: Comando a guardar en el archivo.
  */
 void guardarComando(char* comando)
 {
@@ -482,13 +475,10 @@ void guardarComando(char* comando)
     }
 }
 
-
-
 /**
-* Procesa un comando obtenido de consola.
-* Parámetros:
-*    cadena: Comando a procesar.
-*/
+ * Procesa un comando.
+ * @param cadena: Comando a ejecutar.
+ */
 void processCommand(char* cadena)
 {
     
@@ -585,7 +575,6 @@ void processCommand(char* cadena)
                             {
                                 if(arreglo[i] == ">")
                                 {
-                                    cout << "GO TO COPY" << endl;
                                     catCopiar(cadena);
                                 }
                                 else
@@ -686,6 +675,10 @@ void processCommand(char* cadena)
     return;
 }
 
+/**
+ * Procesa el comando insertado por el usuario.
+ * @param cadena: Comando insertado por el usuario.
+ */
 void principalProcess(char* cadena)
 {
     string findAmpersand, comando_string;

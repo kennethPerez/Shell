@@ -8,3 +8,8 @@ clear
 ls -1
 cclear
 clear
+cat a.txt
+ls -1
+clear
+cat comandos.txt
+clear
