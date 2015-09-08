@@ -737,6 +737,25 @@ void principalProcess(char* cadena)
 }
 
 
+bool lsEspecial(char* comando)
+{
+    list<string> arreglo = splitByOr(comando);
+    list<string>::iterator iterador = arreglo.begin();
+    
+    bool hecho = false;
+    
+    if(arreglo.size() >= 2){
+        list<string> lista = split(arreglo.pop_front());
+        
+        while(iterador != arreglo.end())
+        {
+            *iterador++;
+        }
+    }
+    
+    return hecho;
+}
+
 main()
 {
     
