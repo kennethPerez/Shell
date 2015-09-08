@@ -1,0 +1,3 @@
+cd ..
+ls -1
+grep a /home/kenneth

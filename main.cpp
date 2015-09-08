@@ -19,8 +19,6 @@
 #include <sstream>
 #include <list>
 
-#include <termios.h>  
-#include <iomanip>
 
 #define length(x) (sizeof(x)/sizeof(x[0]))
 #define HOME getenv("HOME")
@@ -659,7 +657,7 @@ void processCommand(char* cadena)
                 char comando[256];
                 char* p;            
                 cout << "Digite el numero de comando o '0' para salir: ";   
-                p = gets(comando);
+               p = gets(comando);
 
                 int num = int(*p)-48;
 
@@ -717,6 +715,7 @@ void principalProcess(char* cadena)
         if(findAmpersand.find("&", 0) != string::npos)
         {
             cout << "*********** Proceso ejecutandose en segundo plano ***********" << endl;
+            
         }
         else
         {
@@ -737,8 +736,10 @@ void principalProcess(char* cadena)
     }
 }
 
+
 main()
 {
+    
     char comando[256];
     char* p;
 
