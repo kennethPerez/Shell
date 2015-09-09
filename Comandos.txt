@@ -1,0 +1,21 @@
+ls -1
+ls -1 | grep x | grep D
+gedit
+nano
+gedit
+gedit
+hola
+ls -1
+hola
+ls -1
+ls -1
+ls -1
+ls /home/kenneth/Descargas
+ls -1 | grep x | grep D
+ls -1
+ls /home/kenneth/DescargA
+ls /home/kenneth/DescargA
+ls -1
+ls -1 | grep x | grep D
+ls /home/kenneth/Descargas
+ls -1 | grep x | grep D

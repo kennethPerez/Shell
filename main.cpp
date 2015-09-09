@@ -194,14 +194,20 @@ void ls(char* comando)
 
     if(directorio != NULL)
     {
+        list<string> listaDirectorios;
         while((datosDirectorio = readdir(directorio)))
         {
             if ( !strcmp(datosDirectorio->d_name, ".") || !strcmp(datosDirectorio->d_name, "..") || datosDirectorio->d_name[0]=='.')
                 continue;
             else
-                printf("%-20s\n", datosDirectorio->d_name);
+                //printf("%-20s\n", datosDirectorio->d_name);
+                listaDirectorios.push_back(datosDirectorio->d_name);
         }
         closedir(directorio);
+        
+        listaDirectorios.sort();
+        for(int i=0; i < listaDirectorios.size(); i++)
+            cout << getValueAtPosition(listaDirectorios, i) << endl;
     }
     else
         printf("%s no existe el directorio\n",getValueAtPosition(arreglo,1).c_str());
@@ -350,6 +356,7 @@ void lsEspecial(char* comando)
                 }                
             }
             elementosBuscados.unique();
+            elementosBuscados.sort();
             
             for(int i=0; i < elementosBuscados.size(); i++)
                 cout << getValueAtPosition(elementosBuscados, i) << endl;
@@ -851,10 +858,6 @@ void principalProcess(char* cadena)
         }
     }
 }
-
-
-
-
 
 main()
 {
