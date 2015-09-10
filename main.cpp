@@ -18,13 +18,16 @@
 #include <fstream>
 #include <sstream>
 #include <list>
+#include <thread>
+#include <unistd.h>
+
 
 #define length(x) (sizeof(x)/sizeof(x[0]))
 #define HOME getenv("HOME")
 
 using namespace std;
 using std::string;
-extern "C" int gethostname (char*, int);
+//extern "C" int gethostname (char*, int);
 
 /** Mantiene la ruta actual de trabajo */
 char* directorioActual = HOME;
@@ -837,8 +840,24 @@ void principalProcess(char* cadena)
             sfind = string(*iterador);
 
             if(sfind.find("&", 0) != string::npos)
-            {
+            {   
+                stringstream ss(*iterador);
+                string s;
+                list<string> arreglo;
+
+                while(getline(ss, s, '&'))
+                {
+                    arreglo.push_back(s);
+                }
+                
+                usleep(10000000);
                 cout << "*********** Proceso ejecutandose en segundo plano ***********" << endl;
+                char* c = new char[length(getValueAtPosition(arreglo,0)) + 1];
+                strcpy(c,getValueAtPosition(arreglo,0).c_str());
+                thread hilo (processCommand, c);
+                hilo.join();
+                cout << "*********** Proceso ejecutandose en segundo plano ***********" << endl;
+                
             }
             else
             {
