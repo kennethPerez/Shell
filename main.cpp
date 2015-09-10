@@ -852,6 +852,7 @@ void principalProcess(char* cadena)
                 
                 usleep(10000000);
                 cout << "*********** Proceso ejecutandose en segundo plano ***********" << endl;
+                
                 char* c = new char[length(getValueAtPosition(arreglo,0)) + 1];
                 strcpy(c,getValueAtPosition(arreglo,0).c_str());
                 thread hilo (processCommand, c);
