@@ -8,6 +8,7 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <fcntl.h>
 #include <dirent.h>
 #include <cstdio>
 #include <cstdlib>
@@ -29,7 +30,6 @@
 
 using namespace std;
 using std::string;
-//extern "C" int gethostname (char*, int);
 
 /** Mantiene la ruta actual de trabajo */
 char* directorioActual = HOME;
@@ -379,13 +379,7 @@ void lsEspecial(char* comando)
 void cd(char* comando)
 {
     list<string> arreglo = split(comando);
-    
-    list<string>::iterator iterador = arreglo.begin();
-    while(iterador != arreglo.end())
-    {
-        cout << ">" << *iterador++ << "<" << endl;
-    }
-    
+        
     if(strcmp(getValueAtPosition(arreglo,1).c_str(), "~") == 0)
         directorioActual = HOME;
 
@@ -554,17 +548,49 @@ void guardarComando(char* comando)
     }
 }
 
+
+/**
+ * Imprime la informacion IO de un proceso
+ * @param pid: Proceso a buiscar
+ */
+void print_process(int pid)
+{
+    int fd;
+    char filename[24];
+    char arg_list[1024];
+    size_t length;
+    char* next_arg;
+    
+    snprintf(filename,sizeof(filename),"/proc/%d/io",pid);
+    
+    
+    fd = open(filename,O_RDONLY);
+    length = read(fd, arg_list, sizeof(arg_list));
+    close(fd);
+    
+    arg_list[length] = '\0';
+    
+    next_arg = arg_list;
+    while(next_arg < arg_list+length)
+    {
+        printf("%s\n",next_arg);
+        next_arg += strlen(next_arg)+1;
+    }
+}
+
 /**
  * Procesa un comando.
  * @param cadena: Comando a ejecutar.
  */
 void processCommand(char* cadena)
-{
+{    
     stringstream ss(cadena);
     stringstream tt(cadena);
     string s, t;
     int cantidadPalabras = 0;
-
+    
+    
+    
     while(getline(ss, s, ' '))
     {
         cantidadPalabras++;
@@ -582,6 +608,9 @@ void processCommand(char* cadena)
         }
     }
     
+    
+    
+
     if(length(arreglo) > 0)
     {
         ///-----------------------------------------------
@@ -710,6 +739,17 @@ void processCommand(char* cadena)
             exit(1);
         }
         
+        else if(arreglo[0] == "ioacct")
+        {
+            if(length(arreglo) == 2)
+            {
+                int p = atoi(arreglo[1].c_str());
+                print_process(p);
+            }
+            else
+                cout << "Argumento invalido para la orden <ioacct>." << endl;
+        }
+        
         ///-----------------------------------------------
         else if(arreglo[0] == "cmds")
         {
@@ -739,12 +779,11 @@ void processCommand(char* cadena)
                 if(i > 1)
                 {
                     cout << "0. Salir" << endl;
-                    char comando[256];
-                    char* p;            
+                    char comando[256]; 
                     cout << "Digite el numero de comando: ";   
-                    p = gets(comando);
+                    gets(comando);
 
-                    int num = atoi(p);
+                    int num = atoi(comando);
                     if(num > 0)
                     {
                         ifstream archivo("Comandos.txt",ios::in);
@@ -754,8 +793,6 @@ void processCommand(char* cadena)
                         {
                             if(i == num)
                             {
-                                //char* p = new char[length(linea) + 1];
-                                //strcpy(p,linea.c_str());
                                 principalProcess((char*)linea.c_str());
                             }
                             i++;
@@ -790,13 +827,12 @@ void processCommand(char* cadena)
                 strcat(ruta,"/");
                 strcat(ruta,arreglo[0].c_str());
                                
-                if(system(ruta) == 0)
+                if(system(arreglo[0].c_str()) == 0)
                 {
-                    system("clear");
+                    system(arreglo[0].c_str());
                     return;
                 }
             }
-            system("clear");
             cout << "No se ha encontrado la orden <" + arreglo[0] + ">." << endl;
         }  
     }
@@ -863,6 +899,7 @@ void principalProcess(char* cadena)
         }
     }
 }
+
 
 main()
 {
