@@ -826,17 +826,24 @@ void processCommand(char* cadena)
                 strcpy(ruta,getValueAtPosition(arregloPath,i).c_str());
                 strcat(ruta,"/");
                 strcat(ruta,arreglo[0].c_str());
-                               
-                if(system(arreglo[0].c_str()) == 0)
-                {
-                    system(arreglo[0].c_str());
-                    return;
-                }
+                           
+                system(arreglo[0].c_str());
+                break;
             }
             cout << "No se ha encontrado la orden <" + arreglo[0] + ">." << endl;
         }  
     }
     return;
+}
+
+
+void processCommandThread(string cadena)
+{
+    sleep(5);
+    cout << endl<< "*********** Proceso ejecutandose en segundo plano ***********" << endl;
+    processCommand((char*)cadena.c_str());
+    cout << "*********** Proceso ejecutandose en segundo plano ***********" << endl;
+    getEntorno();
 }
 
 /**
@@ -877,11 +884,9 @@ void principalProcess(char* cadena)
                     arreglo.push_back(s);
                 }
                 
-                usleep(10000000);
-                cout << "*********** Proceso ejecutandose en segundo plano ***********" << endl;
-                thread hilo (processCommand, (char*)getValueAtPosition(arreglo,0).c_str());
-                hilo.join();
-                cout << "*********** Proceso ejecutandose en segundo plano ***********" << endl;
+                thread hilo (processCommandThread, getValueAtPosition(arreglo,0));
+                hilo.detach();
+                
             }
             else
             {
