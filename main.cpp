@@ -20,6 +20,8 @@
 #include <list>
 #include <thread>
 #include <unistd.h>
+#include <cstring>
+#include <pwd.h>
 
 
 #define length(x) (sizeof(x)/sizeof(x[0]))
@@ -98,9 +100,8 @@ list<string> split(char* cadena)
 list<string> splitByOr(char* cadena)
 {
     list<string> lista;
-    string find = string(cadena);
     
-    if(find.find("|", 0) != string::npos)
+    if(strstr(cadena,"|"))
     {
         stringstream ss(cadena);
         string s, comando = "";
@@ -203,7 +204,6 @@ void ls(char* comando)
             if ( !strcmp(datosDirectorio->d_name, ".") || !strcmp(datosDirectorio->d_name, "..") || datosDirectorio->d_name[0]=='.')
                 continue;
             else
-                //printf("%-20s\n", datosDirectorio->d_name);
                 listaDirectorios.push_back(datosDirectorio->d_name);
         }
         closedir(directorio);
@@ -213,7 +213,7 @@ void ls(char* comando)
             cout << getValueAtPosition(listaDirectorios, i) << endl;
     }
     else
-        printf("%s no existe el directorio\n",getValueAtPosition(arreglo,1).c_str());
+        printf("No existe el directorio %s\n",getValueAtPosition(arreglo,1).c_str());
 
 }
 
@@ -247,7 +247,7 @@ void ls_GuardarArchivo(char* comando)
         closedir(directorio);
     }
     else
-        printf("%s no existe el directorio\n\n",directorioActual);
+        printf("No existe el directorio %s.\n",directorioActual);
     
 }
 
@@ -293,7 +293,7 @@ void ls_InfoArchivo(char* comando)
          closedir(directorio);
     }
     else
-        printf("%s no existe el Archivo en el directorio %s\n\n",getValueAtPosition(arreglo,2).c_str(),directorioActual);
+        printf("El archivo %s no existe en el directorio %s.\n",getValueAtPosition(arreglo,2).c_str(),directorioActual);
 
 }
 
@@ -304,16 +304,13 @@ void ls_InfoArchivo(char* comando)
 void lsEspecial(char* comando)
 {
     list<string> arreglo = splitByOr(comando);    
-    
     list<string> letras;
     
     if(arreglo.size() >= 2)
     {
         for(int i = 0; i < arreglo.size(); i++)
         {
-            char* comando = new char[length(getValueAtPosition(arreglo,i)) + 1];;
-            strcpy(comando,getValueAtPosition(arreglo,i).c_str());
-            list<string> elementos = split(comando);
+            list<string> elementos = split((char*)getValueAtPosition(arreglo,i).c_str());
             
             if(elementos.size() == 2)
             {
@@ -383,6 +380,12 @@ void cd(char* comando)
 {
     list<string> arreglo = split(comando);
     
+    list<string>::iterator iterador = arreglo.begin();
+    while(iterador != arreglo.end())
+    {
+        cout << ">" << *iterador++ << "<" << endl;
+    }
+    
     if(strcmp(getValueAtPosition(arreglo,1).c_str(), "~") == 0)
         directorioActual = HOME;
 
@@ -395,14 +398,9 @@ void cd(char* comando)
     else
     {
         if(opendir(getValueAtPosition(arreglo,1).c_str()))
-        {
-            char* archivo = new char[length(getValueAtPosition(arreglo,1)) + 1];
-            strcpy(archivo,getValueAtPosition(arreglo,1).c_str());
-            
-            directorioActual = archivo;
-        }
+            directorioActual = (char*)getValueAtPosition(arreglo,1).c_str();
         else
-            printf("%s no existe el directorio\n",getValueAtPosition(arreglo,1).c_str());
+            printf("No existe el directorio %s.\n", getValueAtPosition(arreglo,1).c_str());
     }
 }
 
@@ -427,7 +425,7 @@ void grepDirectorio(char* comando)
     }
     else
     {
-        printf("\n%s no existe el directorio\n",getValueAtPosition(arreglo,2).c_str());
+        printf("No existe el directorio %s.\n",getValueAtPosition(arreglo,2).c_str());
     }
     closedir(directorio);
 }
@@ -454,7 +452,7 @@ void grepArchivo(char* comando)
     ifstream File(directorio.c_str());
     
     if(File.fail())
-        printf("\n%s no existe el directorio\n",getValueAtPosition(arreglo,2).c_str());
+        printf("No existe el directorio %s.\n",getValueAtPosition(arreglo,2).c_str());
     else
     {
         while(getline(File, linea))
@@ -525,10 +523,8 @@ void catCopiar(char* cadena)
     while(it != arreglo.end())
     {
         linea = *it;
-        texto = new char[length(linea) + 1];
-        strcpy(texto, linea.c_str());
 
-        if(!strcmp(texto,">") == 0){
+        if(linea != ">"){
             contenido += obtenerContenidoArchivo(linea);
         }
         else
@@ -585,7 +581,7 @@ void processCommand(char* cadena)
             i++;
         }
     }
-
+    
     if(length(arreglo) > 0)
     {
         ///-----------------------------------------------
@@ -621,9 +617,7 @@ void processCommand(char* cadena)
         {
             if(length(arreglo) == 3)
             {
-                string Stringcadena = string(cadena);
-                
-                if(Stringcadena.find(".", 0) != string::npos)
+                if(strstr(cadena,"."))
                     grepArchivo(cadena);
                 else
                     grepDirectorio(cadena);
@@ -640,9 +634,8 @@ void processCommand(char* cadena)
         ///-----------------------------------------------
         else if(arreglo[0] == "cat")
         {
-            string cadena1 = string(cadena);
             int mayor = 0;
-            if(cadena1.find(">", 0) != string::npos)
+            if(strstr(cadena,">"))
             {
                 if(length(arreglo) >= 3)
                 {
@@ -761,9 +754,9 @@ void processCommand(char* cadena)
                         {
                             if(i == num)
                             {
-                                char* p = new char[length(linea) + 1];
-                                strcpy(p,linea.c_str());
-                                principalProcess(p);
+                                //char* p = new char[length(linea) + 1];
+                                //strcpy(p,linea.c_str());
+                                principalProcess((char*)linea.c_str());
                             }
                             i++;
                         }
@@ -816,13 +809,11 @@ void processCommand(char* cadena)
  */
 void principalProcess(char* cadena)
 {
-    string sfind, comando_string;
-    char * comando;
+    string comandoTemporal;
     
-    sfind = string(cadena);
-    guardarComando(cadena);
-    if( (sfind.find("ls",0) != string::npos) && (sfind.find("-1",0) != string::npos) && (sfind.find("grep",0) != string::npos))
+    if(strstr(cadena,"ls") && strstr(cadena,"-1") && strstr(cadena,"grep"))
     {
+        guardarComando(cadena);
         lsEspecial(cadena);
     }
     else
@@ -833,14 +824,14 @@ void principalProcess(char* cadena)
         {
             listaComandos.push_back(cadena);
         }
-
+        
         list<string>::iterator iterador = listaComandos.begin();
         while(iterador != listaComandos.end())
         {
-            sfind = string(*iterador);
-
-            if(sfind.find("&", 0) != string::npos)
+            comandoTemporal = *iterador;
+            if(strstr((char*)comandoTemporal.c_str(),"&"))
             {   
+                guardarComando((char*)comandoTemporal.c_str());
                 stringstream ss(*iterador);
                 string s;
                 list<string> arreglo;
@@ -852,21 +843,15 @@ void principalProcess(char* cadena)
                 
                 usleep(10000000);
                 cout << "*********** Proceso ejecutandose en segundo plano ***********" << endl;
-                
-                char* c = new char[length(getValueAtPosition(arreglo,0)) + 1];
-                strcpy(c,getValueAtPosition(arreglo,0).c_str());
-                thread hilo (processCommand, c);
+                thread hilo (processCommand, (char*)getValueAtPosition(arreglo,0).c_str());
                 hilo.join();
                 cout << "*********** Proceso ejecutandose en segundo plano ***********" << endl;
-                
             }
             else
             {
-                comando_string = *iterador;
-                comando = new char[length(comando_string) + 1];
-                strcpy(comando,comando_string.c_str());
-
-                processCommand(comando);
+                comandoTemporal = *iterador;
+                
+                processCommand((char*)comandoTemporal.c_str());
             }
 
             *iterador++;
@@ -882,17 +867,10 @@ void principalProcess(char* cadena)
 main()
 {
     char comando[256];
-    char* p;
 
     do
     {
         getEntorno();
-        
-        p = gets(comando);
-        
-        principalProcess(p);
-        p = NULL;
-
+        principalProcess(gets(comando));
     }while(true);
-    
 }
