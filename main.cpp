@@ -285,8 +285,8 @@ void ls_InfoArchivo(char* comando)
                 printf( (estruturaPermisos.st_mode & S_IROTH) ? "r" : "-" );//Lectura otros
                 printf( (estruturaPermisos.st_mode & S_IWOTH) ? "w" : "-" );//Escritura otros
                 printf( (estruturaPermisos.st_mode & S_IXOTH) ? "x" : "-" );//Ejecucion otros
-                printf("%-3s");
-                printf("%-20s\n", datosDirectorio->d_name);
+                //printf("%-3s");
+                printf(" %-20s\n", datosDirectorio->d_name);
             }
         }
 
@@ -751,7 +751,7 @@ void processCommand(char* cadena)
         }
         
         ///-----------------------------------------------
-        else if(arreglo[0] == "cmds")
+        else if(arreglo[0] == "history")
         {
             if(length(arreglo) == 2)
             {
@@ -760,7 +760,7 @@ void processCommand(char* cadena)
                     remove("Comandos.txt"); 
                 }
                 else
-                    cout << "Argumento invalido para la orden <cmds>." << endl;
+                    cout << "Argumento invalido para la orden <history>." << endl;
             }
             else if(length(arreglo) == 1)
             {
@@ -840,10 +840,9 @@ void processCommand(char* cadena)
 void processCommandThread(string cadena)
 {
     sleep(5);
-    cout << endl<< "*********** Proceso ejecutandose en segundo plano ***********" << endl;
+    cout <<endl<< "**************************************************************" << endl;    
     processCommand((char*)cadena.c_str());
-    cout << "*********** Proceso ejecutandose en segundo plano ***********" << endl;
-    getEntorno();
+    cout << "**************** Proceso terminado en segundo plano ****************" << endl;
 }
 
 /**
@@ -852,11 +851,12 @@ void processCommandThread(string cadena)
  */
 void principalProcess(char* cadena)
 {
+    guardarComando(cadena);
+    
     string comandoTemporal;
     
     if(strstr(cadena,"ls") && strstr(cadena,"-1") && strstr(cadena,"grep"))
-    {
-        guardarComando(cadena);
+    {        
         lsEspecial(cadena);
     }
     else
@@ -874,7 +874,6 @@ void principalProcess(char* cadena)
             comandoTemporal = *iterador;
             if(strstr((char*)comandoTemporal.c_str(),"&"))
             {   
-                guardarComando((char*)comandoTemporal.c_str());
                 stringstream ss(*iterador);
                 string s;
                 list<string> arreglo;
@@ -883,15 +882,14 @@ void principalProcess(char* cadena)
                 {
                     arreglo.push_back(s);
                 }
-                
+                cout << "*********** Proceso ejecutandose en segundo plano ***********" << endl;
                 thread hilo (processCommandThread, getValueAtPosition(arreglo,0));
                 hilo.detach();
                 
             }
             else
             {
-                comandoTemporal = *iterador;
-                
+                comandoTemporal = *iterador;                
                 processCommand((char*)comandoTemporal.c_str());
             }
 
