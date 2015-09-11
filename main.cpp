@@ -540,7 +540,7 @@ void catCopiar(char* cadena)
  */
 void guardarComando(char* comando)
 {
-    if(!strcmp(comando,"cmds") == 0)
+    if(!strcmp(comando,"history") == 0)
     {
         ofstream archivo("Comandos.txt",ios::app);
         archivo << comando;
